@@ -31,6 +31,7 @@ app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send('hello');
+  // res.redirect(/add)
 });
 
 app.get("/urls", (req,res) =>{
@@ -40,7 +41,7 @@ app.get("/urls", (req,res) =>{
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {username: req.cookies['username']};
-  res.render('urls_new');
+  res.render('urls_new', templateVars);
 });
 
 app.get("/urls/:id", (req,res) => {
