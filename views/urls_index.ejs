@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+    <!-- Add your EJS code here -->
+  <% for (keys in urls){ %>
+    <form method="POST" action="/urls/<%= keys %>/delete">
+      <ul style="list-style: none;">
+        <li><%= keys + "=====>" + urls[keys] %> <a href="/urls/<%= keys %>">Edit</a><input type="submit" name="delete" value="DELETE" style="margin-left: 10px;"> </li>
+
+      </ul>
+    </form>
+  <% } %>
+</body>
+</html>

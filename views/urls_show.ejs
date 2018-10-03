@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <%include ./partials/_header.ejs %>
+  <p><%= shortURL + "====>" + longURL %></p>
+
+  <form method = "POST" action="/urls/<%= shortURL %>">
+    <label for="newURL"> New URL: </label>
+    <input type="text" name="newURL" placeholder = "http://">
+    <input type="submit" name="updateURL" value="Update">
+
+  </form>
+
+
+
+</body>
+</html>
