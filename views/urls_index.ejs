@@ -5,6 +5,7 @@
 </head>
 <body>
     <!-- Add your EJS code here -->
+  <% include partials/_header %>
   <% for (keys in urls){ %>
     <form method="POST" action="/urls/<%= keys %>/delete">
       <ul style="list-style: none;">

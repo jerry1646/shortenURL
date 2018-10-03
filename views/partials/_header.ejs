@@ -1,3 +1,15 @@
 <header>
   <h3>ShortURL</h3>
 </header>
+<%if (!username){ %>
+<form action="/login" method="post">
+  <label for "username">Username</label>
+  <input type="text" name="username" placeholder="My user name is...">
+  <input type="submit" name="Identify ME!">
+</form>
+<% } else{%>
+<h4>Greetings, <%= username %></h4>
+<form action="/logout" method="post">
+  <input type="submit" value="Log Out">
+</form>
+<%} %>
