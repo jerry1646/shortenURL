@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include partials/_head %>
+  <body style="font-size:20px; padding:50px;">
+    <% include partials/_header %>
+
+    <div class="jumbotron">
+      <h3>Register New User</h3>
+      <form method="POST" action="">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <label for "email"> Email: </label>
+            <input type="email" name="email" class="form-control" placeholder="My email is ...">
+          </li>
+          <li class="list-group-item">
+            <label for "password"> Password: </label>
+            <input type="password" name="password" class="form-control">
+          </li>
+          <li class="list-group-item">
+            <input type="submit" class="btn btn-primary" name="register" value="Register!">
+          </li>
+        </ul>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,7 +1,7 @@
-var express = require("express");
-var app = express();
-var cookieParser = require('cookie-parser')
-var PORT = 8080;
+const express = require("express");
+const app = express();
+const cookieParser = require('cookie-parser');
+const PORT = 8080;
 const bodyParser = require("body-parser");
 
 
@@ -15,9 +15,42 @@ function generateRandomString() {
   return rString;
 }
 
+function checkUniqueEmail(email){
+  let unique = true;
+  for (let userID in users){
+    if (users[userID].email === email){
+      unique = false;
+    }
+  }
+  return unique;
+}
+
+function findUserbyEmail(email){
+  let user;
+  for (let userID in users){
+    if (users[userID].email === email){
+      user = users[userID];
+    }
+  }
+  return user;
+}
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+var users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
 };
 
 
@@ -28,31 +61,30 @@ app.use(cookieParser());
 
 
 
+// ---- Endpoint routing ----//
+// ---- URL processing endpoints ----//
 
 app.get("/", (req, res) => {
-  res.send('hello');
-  // res.redirect(/add)
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req,res) =>{
-  let templateVars = {urls: urlDatabase, username: req.cookies['username']};
+  let templateVars = {urls: urlDatabase, user: users[req.cookies['user_id']]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies['username']};
+  let templateVars = {user: users[req.cookies['user_id']]};
   res.render('urls_new', templateVars);
 });
 
 app.get("/urls/:id", (req,res) => {
-  let templateVars = {shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies['username']};
+  let templateVars = {shortURL: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies['user_id']]};
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  // console.log(urlDatabase);
   let longURL = urlDatabase[req.params.shortURL];
-  // res.send(longURL);
   res.redirect(longURL);
 });
 
@@ -74,21 +106,61 @@ app.post("/urls/:id/delete", (req,res) => {
 
 app.post("/urls/:id", (req,res) => {
   urlDatabase[req.params.id] = req.body.newURL;
-  res.redirect("/urls/");
+  res.redirect("/urls");
+});
+
+
+// ---- User account endpoints ----//
+app.get("/register", (req,res) => {
+  let templateVars = {user: users[req.cookies['user_id']]};
+  res.render("register", templateVars);
+});
+
+app.post("/register", (req,res) => {
+  if (req.body.email === "" || req.body.password === ""){
+    res.status(400).send('Invalid email and password input');
+  } else if(!checkUniqueEmail(req.body.email)){
+    res.status(400).send('This email has already been registered');
+  } else{
+    let newUserID = generateRandomString()+generateRandomString();
+    // console.log(newUserID);
+    users[newUserID] =  {
+      id: newUserID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie("user_id", newUserID);
+    res.redirect("/urls");
+  }
+});
+
+app.get("/login", (req,res) => {
+  let templateVars = {user: users[req.cookies['user_id']]};
+  res.render("login", templateVars);
 });
 
 app.post("/login", (req,res) =>{
-  res.cookie("username",req.body.username);
-  res.redirect("/urls");
+  let user = findUserbyEmail(req.body.email);
+  if (user){
+    if (user.password === req.body.password){
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+    } else{
+      res.status(403).send("The password you entered is incorrect!");
+    }
+  } else {
+    res.status(403).send("The user doesn't exist!");
+  }
+
 });
+
 
 app.post("/logout", (req,res) =>{
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
-
-
+// ---- Host Server ---- //
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

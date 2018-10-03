@@ -4,19 +4,16 @@
 <div class="text-center">
 
   <div class="form-group">
-    <%if (!username){ %>
-    <form action="/login" method="post">
-      <label for "username">Username: </label>
-      <input type="text" class="form-control mx-auto" style = "width: 200px; margin-bottom: 10px;" name="username" placeholder="My user name is...">
-      <input type="submit" class="btn btn-primary" value="Identify ME!">
-    </form>
-    <% } else{%>
-    <p>Greetings, <%= username %></p>
+    <%if (user){ %>
+    <p>Greetings, <%= user.email %></p>
     <form action="/logout" method="post">
       <input type="submit" class="btn btn-primary" value="Log Out">
     </form>
+    <% } else{%>
+    <p>Welcome! Please log in or register.</p>
+    <a href="/login"><button class="btn btn-secondary">Log in</button></a>
+    <a href="/register"><button class="btn btn-primary">Register!</button></a>
     <%} %>
-
   </div>
 
 </div>

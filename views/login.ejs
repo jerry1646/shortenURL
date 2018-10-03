@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include partials/_head %>
+  <body style="font-size:20px; padding:50px;">
+    <% include partials/_header %>
+    <div class="jumbotron form-group text-center">
+      <h3><b>Log In</b></h3>
+      <form action="/login" method="post">
+        <label for "email">Email: </label>
+        <input type="text" class="form-control mx-auto" style = "width: 200px; margin-bottom: 10px;" name="email" placeholder="have.a@good.day.com">
+        <label for "password">Password: </label>
+        <input type="text" class="form-control mx-auto" style = "width: 200px; margin-bottom: 10px;" name="password">
+        <input type="submit" class="btn btn-primary" value="Log me in!">
+      </form>
+    </div>
+  </body>
+</html>
+
