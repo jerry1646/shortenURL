@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
+<% include partials/_head %>
+<body style="font-size:20px; padding:50px;">
   <%include ./partials/_header.ejs %>
-  <p><%= shortURL + "====>" + longURL %></p>
+  <div class="jumbotron form-group text-center">
+    <p><%= shortURL + " ====> " + longURL %></p>
 
-  <form method = "POST" action="/urls/<%= shortURL %>">
-    <label for="newURL"> New URL: </label>
-    <input type="text" name="newURL" placeholder = "http://">
-    <input type="submit" name="updateURL" value="Update">
+    <form method = "POST" action="/urls/<%= shortURL %>">
+      <label for="newURL"> <b>New URL: </b></label>
+      <input type="text" class="form-control mx-auto" style = "width: 400px; margin-bottom: 10px" name="newURL" placeholder = "http://">
+      <input type="submit" class="btn btn-primary" name="updateURL" value="Update">
 
-  </form>
+    </form>
+
+  </div>
 
 
 

@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
-    <!-- Add your EJS code here -->
+<% include partials/_head %>
+<body style="font-size:20px; padding:50px;">
   <% include partials/_header %>
-  <% for (keys in urls){ %>
-    <form method="POST" action="/urls/<%= keys %>/delete">
-      <ul style="list-style: none;">
-        <li><%= keys + "=====>" + urls[keys] %> <a href="/urls/<%= keys %>">Edit</a><input type="submit" name="delete" value="DELETE" style="margin-left: 10px;"> </li>
 
-      </ul>
-    </form>
-  <% } %>
+  <div class="jumbotron form-group text-center">
+      <% for (keys in urls){ %>
+      <form method="POST" action="/urls/<%= keys %>/delete">
+        <ul class="list-group">
+          <li class="list-group-item align-items-center"><%= keys + " =====> " + urls[keys] %>
+            <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
+            <button type="submit" name="delete" class="btn btn-danger">DELETE</button>
+          </li>
+        </ul>
+      </form>
+      <% } %>
+
+  </div>
+
 </body>
 </html>

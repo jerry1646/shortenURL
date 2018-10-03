@@ -1,15 +1,22 @@
 <header>
-  <h3>ShortURL</h3>
+  <h2 class="text-center">Shorten Your URL!</h2>
 </header>
-<%if (!username){ %>
-<form action="/login" method="post">
-  <label for "username">Username</label>
-  <input type="text" name="username" placeholder="My user name is...">
-  <input type="submit" name="Identify ME!">
-</form>
-<% } else{%>
-<h4>Greetings, <%= username %></h4>
-<form action="/logout" method="post">
-  <input type="submit" value="Log Out">
-</form>
-<%} %>
+<div class="text-center">
+
+  <div class="form-group">
+    <%if (!username){ %>
+    <form action="/login" method="post">
+      <label for "username">Username: </label>
+      <input type="text" class="form-control mx-auto" style = "width: 200px; margin-bottom: 10px;" name="username" placeholder="My user name is...">
+      <input type="submit" class="btn btn-primary" value="Identify ME!">
+    </form>
+    <% } else{%>
+    <p>Greetings, <%= username %></p>
+    <form action="/logout" method="post">
+      <input type="submit" class="btn btn-primary" value="Log Out">
+    </form>
+    <%} %>
+
+  </div>
+
+</div>
