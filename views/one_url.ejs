@@ -4,15 +4,24 @@
 <body style="font-size:20px; padding:50px;">
   <%include ./partials/_header.ejs %>
   <div class="jumbotron form-group text-center">
-    <p><%= shortURL + " ====> " + URL.longURL %></p>
+    <h3><b>Inspect URL</b></h3>
+    <div>
 
-    <form method = "POST" action="/urls/<%= shortURL %>">
-      <label for="newURL"> <b>New URL: </b></label>
-      <input type="text" class="form-control mx-auto" style = "width: 400px; margin-bottom: 10px" name="newURL" placeholder = "http://">
-      <input type="submit" class="btn btn-primary" name="updateURL" value="Update">
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center"><b>Original URL: </b><%= URL.longURL %></li>
+        <li class="list-group-item d-flex justify-content-between align-items-center"><b>Shortened URL: </b><%= shortURL %></li>
+        <li class="list-group-item d-flex justify-content-between align-items-center"><b>Created On: </b><%= URL.date %></li>
+        <li class="list-group-item d-flex justify-content-between align-items-center"><b>Visit Count: </b><%= URL.visit %></li>
+        <li class="list-group-item align-items-center">
+          <form method = "POST" action="/urls/<%= shortURL %>">
+            <label for="newURL"> <b>Assign to New URL: </b></label>
+            <input type="text" class="form-control mx-auto" style = "width: 400px; margin-bottom: 10px" name="newURL" placeholder = "http://">
+            <input type="submit" class="btn btn-primary" name="updateURL" value="Update">
+          </form>
+        </li>
+      </ul>
 
-    </form>
-
+    </div>
   </div>
 
 

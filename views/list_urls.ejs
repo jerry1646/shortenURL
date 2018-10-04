@@ -3,29 +3,42 @@
 <% include partials/_head %>
 <body style="font-size:20px; padding:50px;">
   <% include partials/_header %>
+  <div class="jumbotron">
+    <h3><b>List of your URLs</b></h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Original URLs</th>
+          <th scope="col">Short URLs</th>
+          <th scope="col">Created on</th>
+          <th scope="col">View Counts</th>
+          <th scope="col">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let i = 1 %>
+        <% for (keys in urls){ %>
+        <tr>
+          <th scope="row"><%= i %></th>
+          <td>https://<%= urls[keys].longURL %></td>
+          <td><a href="localhost:8080/u/<%= keys %>">localhost:8080/u/<%= keys %></a></td>
+          <td><%= urls[keys].date %></td>
+          <td><%= urls[keys].visit %></td>
+          <td>
+            <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
+            <a href="/urls/<%= keys %>/delete"><button type="button" class="btn btn-danger">DELETE</button></a>
+          </td>
+        </tr>
+        <% i = i+1 %>
+        <% } %>
+      </tbody>
+    </table>
 
-  <div class="jumbotron form-group text-center">
-      <% for (keys in urls){ %>
-
-      <form method="POST" action="/urls/<%= keys %>/delete">
-        <ul class="list-group">
-          <li class="list-group-item align-items-center d-flex justify-content-between"><%= urls[keys].longURL + "  =====>  " + "Shortened: "+ keys  %>
-            <div>
-
-              <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
-              <button type="submit" name="delete" class="btn btn-danger">DELETE</button>
-
-            </div>
-          </li>
-        </ul>
-      </form>
-      <% } %>
-
-      <div style="margin-top: 20px">
-
-        <a href="/urls/new"><button class="btn btn-primary">Add New</button></a>
-
-      </div>
+    <div style="margin-top: 20px">
+      <a href="/urls/new"><button class="btn btn-primary">Add New</button></a>
+    </div>
+  </div>
 
   </div>
 

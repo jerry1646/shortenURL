@@ -25,7 +25,23 @@ function getUserURLs(userID) {
   return userURLs;
 }
 
+function dateToday() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; //January is 0!
+  var yyyy = today.getFullYear();
 
+  if(dd<10) {
+      dd = '0'+dd;
+  }
+
+  if(mm<10) {
+      mm = '0'+mm;
+  }
+
+  today = mm + '/' + dd + '/' + yyyy;
+  return today;
+}
 
 function checkUniqueEmail(email){
   let unique = true;
@@ -48,10 +64,14 @@ function findUserbyEmail(email){
 }
 
 var urlDatabase = {
-  "b2xVn2": {longURL:"http://www.lighthouselabs.ca",
-              userID: "userRandomID"},
-  "9sm5xK": {longURL: "http://www.google.com",
-              userID: "user2RandomID"}
+  "b2xVn2": {longURL:"www.lighthouselabs.ca",
+              userID: "userRandomID",
+              date: '01/31/2017',
+              visit: 11},
+  "9sm5xK": {longURL: "www.google.com",
+              userID: "user2RandomID",
+              date: '12/31/2018',
+              visit: 0}
 };
 
 var users = {
@@ -89,8 +109,11 @@ app.use(cookieSession({
 
 app.get("/", (req, res) => {
   let currentUser = users[req.session.user_id];
-  let templateVars = {user: currentUser};
-  res.render('index', templateVars);
+  if (currentUser){
+    res.redirect("urls");
+  } else{
+    res.redirect("login");
+  }
 });
 
 app.get("/urls", (req,res) =>{
@@ -100,7 +123,9 @@ app.get("/urls", (req,res) =>{
     let templateVars = {urls: userURLs, user: currentUser};
     res.render("list_urls", templateVars);
   } else{
-    res.redirect("/login");
+    res.render("error",{user: undefined});
+
+    // res.redirect("/login");
   }
 });
 
@@ -110,6 +135,7 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user){
     res.render('add_new', templateVars);
   } else{
+    // res.render("error", {user: undefined});
     res.redirect("/login");
   }
 });
@@ -119,13 +145,16 @@ app.get("/urls/:id", (req,res) => {
   let templateVars = {shortURL: req.params.id,
     URL: urlDatabase[req.params.id], user: currentUser};
   if (templateVars.user){
-    if (currentUser.id === urlDatabase[templateVars.shortURL].userID){
+    if(!templateVars.URL){
+      res.status(404).send("The short URL you entered is invalid.");
+    } else if (currentUser.id === urlDatabase[templateVars.shortURL].userID){
       res.render("one_url", templateVars);
     } else{
-      res.status(403).send("Authorization Error! You don't have access to edit this URL.")
+      res.status(403).send("Authorization Error! You don't have access to edit this URL.");
     }
   } else{
-    res.redirect("/login");
+    res.render("error", {user: undefined});
+    // res.redirect("/login");
   }
 });
 
@@ -134,9 +163,14 @@ app.post("/urls/:id", (req,res) => {
   res.redirect("/urls");
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect("https://"+longURL);
+app.get("/u/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]){
+    res.status(404).send("The short URL you entered is invalid.");
+  } else{
+    let longURL = urlDatabase[req.params.id].longURL;
+    urlDatabase[req.params.id]['visit']++;
+    res.redirect("https://"+longURL);
+  }
 });
 
 app.post("/urls", (req,res) => {
@@ -144,10 +178,12 @@ app.post("/urls", (req,res) => {
   urlDatabase[shortURL]= {};
   urlDatabase[shortURL]['longURL'] = req.body.longURL;
   urlDatabase[shortURL]['userID'] = req.session.user_id;
+  urlDatabase[shortURL]['date'] = dateToday();
+  urlDatabase[shortURL]['visit'] = 0;
   res.redirect(`/urls`);
 });
 
-app.post("/urls/:id/delete", (req,res) => {
+app.get("/urls/:id/delete", (req,res) => {
 
 // The user matching is unnecessary since POST /delete is only accessable
 // for current user on url_list
@@ -216,7 +252,7 @@ app.post("/login", (req,res) =>{
 
 
 app.post("/logout", (req,res) =>{
-  req.session = null
+  req.session = null;
   res.redirect("/");
 });
 
