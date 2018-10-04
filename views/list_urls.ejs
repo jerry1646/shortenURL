@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include partials/_head %>
+<body style="font-size:20px; padding:50px;">
+  <% include partials/_header %>
+
+  <div class="jumbotron form-group text-center">
+      <% for (keys in urls){ %>
+
+      <form method="POST" action="/urls/<%= keys %>/delete">
+        <ul class="list-group">
+          <li class="list-group-item align-items-center d-flex justify-content-between"><%= urls[keys].longURL + "  =====>  " + "Shortened: "+ keys  %>
+            <div>
+
+              <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
+              <button type="submit" name="delete" class="btn btn-danger">DELETE</button>
+
+            </div>
+          </li>
+        </ul>
+      </form>
+      <% } %>
+
+      <div style="margin-top: 20px">
+
+        <a href="/urls/new"><button class="btn btn-primary">Add New</button></a>
+
+      </div>
+
+  </div>
+
+</body>
+</html>
