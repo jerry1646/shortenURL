@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080;
 
+
+// ---- Functions ----//
 function generateRandomString() {
   const chars = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPLKJHGFDSAZXCVBNM";
   let rString = "";
@@ -63,6 +65,8 @@ function findUserbyEmail(email){
   return user;
 }
 
+// ---- Database object and Dummy user ----//
+
 var urlDatabase = {
   "b2xVn2": {longURL:"www.lighthouselabs.ca",
               userID: "userRandomID",
@@ -87,12 +91,12 @@ var users = {
   }
 };
 
-//hash default user examples
+//Hash dummy user password
 users.userRandomID.password = bcrypt.hashSync("123", 10);
 users.user2RandomID.password = bcrypt.hashSync("qwe", 10);
 
 
-
+// ---- Server setup ----//
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -124,8 +128,6 @@ app.get("/urls", (req,res) =>{
     res.render("list_urls", templateVars);
   } else{
     res.render("error",{user: undefined});
-
-    // res.redirect("/login");
   }
 });
 
@@ -135,7 +137,6 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user){
     res.render('add_new', templateVars);
   } else{
-    // res.render("error", {user: undefined});
     res.redirect("/login");
   }
 });
@@ -154,7 +155,6 @@ app.get("/urls/:id", (req,res) => {
     }
   } else{
     res.render("error", {user: undefined});
-    // res.redirect("/login");
   }
 });
 
@@ -185,8 +185,6 @@ app.post("/urls", (req,res) => {
 
 app.get("/urls/:id/delete", (req,res) => {
 
-// The user matching is unnecessary since POST /delete is only accessable
-// for current user on url_list
   let currentUser = users[req.session.user_id];
   if (currentUser){
     let templateVars = {shortURL: req.params.id,
@@ -196,7 +194,7 @@ app.get("/urls/:id/delete", (req,res) => {
       res.redirect("/urls");
       console.log(`${req.params.id} has been deleted`);
     } else{
-      res.status(403).send("Authorization Error! You don't have access to delete this URL.")
+      res.status(403).send("Authorization Error! You don't have access to delete this URL.");
     }
   } else{
     res.redirect("/login");
