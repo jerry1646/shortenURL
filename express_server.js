@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080;
@@ -71,11 +72,13 @@ var urlDatabase = {
   "b2xVn2": {longURL:"www.lighthouselabs.ca",
               userID: "userRandomID",
               date: '01/31/2017',
-              visit: 11},
+              visit: 11,
+              uniqueVisit: 8},
   "9sm5xK": {longURL: "www.google.com",
               userID: "user2RandomID",
               date: '12/31/2018',
-              visit: 0}
+              visit: 0,
+              uniqueVisit: 0}
 };
 
 var users = {
@@ -104,7 +107,7 @@ app.use(cookieSession({
   keys: ['civilization'],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-
+app.use(cookieParser());
 
 
 
@@ -169,6 +172,10 @@ app.get("/u/:id", (req, res) => {
   } else{
     let longURL = urlDatabase[req.params.id].longURL;
     urlDatabase[req.params.id]['visit']++;
+    if (!req.cookies.viewer){
+      urlDatabase[req.params.id].uniqueVisit += 1;
+      res.cookie('viewer', generateRandomString(), {maxAge: 30 * 24 * 60 * 60 * 1000 }); // track unique visitor in the past 30 days
+    }
     res.redirect("https://"+longURL);
   }
 });
@@ -180,6 +187,7 @@ app.post("/urls", (req,res) => {
   urlDatabase[shortURL]['userID'] = req.session.user_id;
   urlDatabase[shortURL]['date'] = dateToday();
   urlDatabase[shortURL]['visit'] = 0;
+  urlDatabase[req.params.id]['uniqueVisit'] = 0;
   res.redirect(`/urls`);
 });
 
