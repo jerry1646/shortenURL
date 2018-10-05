@@ -5,8 +5,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 !["Screenshot of add-url page where user can create a shortened URL and save it into the use-specific repo"](https://github.com/jerry1646/shortenURL/blob/master/docs/add-url.png)
-!["Screenshot of list-url page which contains details of all URLs that a user has shortened"](https://github.com/jerry1646/shortenURL/blob/master/docs/list-url.png)
-!["Screenshot of inspect-url page where user can update the URL assigned to a certain short URL"](https://github.com/jerry1646/shortenURL/blob/master/docs/inspect-URL.png)
+!["Screenshot of list-url page which contains details of all URLs that a user has shortened"](https://github.com/jerry1646/shortenURL/blob/master/docs/list-with-uniq-count.png)
+!["Screenshot of inspect-url page where user can update the URL assigned to a certain short URL"](https://github.com/jerry1646/shortenURL/blob/master/docs/Inspect-with-log.png)
 
 ## Dependencies
 
