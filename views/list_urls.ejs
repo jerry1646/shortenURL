@@ -21,13 +21,15 @@
         <% for (keys in urls){ %>
         <tr>
           <th scope="row"><%= i %></th>
-          <td>https://<%= urls[keys].longURL %></td>
+          <td><%= urls[keys].longURL %></td>
           <td><a href="localhost:8080/u/<%= keys %>">localhost:8080/u/<%= keys %></a></td>
           <td><%= urls[keys].date %></td>
           <td><%= urls[keys].visit %>(<%= urls[keys].uniqueVisit %>)</td>
           <td>
             <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
-            <a href="/urls/<%= keys %>/delete"><button type="button" class="btn btn-danger">DELETE</button></a>
+            <form style="margin: 0; padding: 0; display: inline;" method="post" action="/urls/<%= keys %>?_method=DELETE">
+              <input type="submit" class="btn btn-danger" name="submit" value="DELETE">
+            </form>
           </td>
         </tr>
         <% i = i+1 %>

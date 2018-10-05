@@ -1,8 +1,8 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 const app = express();
 const PORT = 8080;
 
@@ -69,12 +69,12 @@ function findUserbyEmail(email){
 // ---- Database object and Dummy user ----//
 
 var urlDatabase = {
-  "b2xVn2": {longURL:"www.lighthouselabs.ca",
+  "b2xVn2": {longURL:"https://www.lighthouselabs.ca",
               userID: "userRandomID",
               date: '01/31/2017',
               visit: 0,
               uniqueVisit: 0},
-  "9sm5xK": {longURL: "www.google.com",
+  "9sm5xK": {longURL: "https://www.google.com",
               userID: "user2RandomID",
               date: '12/31/2018',
               visit: 0,
@@ -95,7 +95,7 @@ var users = {
 };
 
 var visitLog = {
-  "9sm5xK":[], //time, visiter,
+  "9sm5xK":[],
   "b2xVn2":[]
 };
 
@@ -110,9 +110,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['civilization'],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 30 * 24 * 60 * 60 * 1000 // 24 hours
 }));
-app.use(cookieParser());
+app.use(methodOverride('_method'));
 
 
 
@@ -151,8 +151,10 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req,res) => {
   let currentUser = users[req.session.user_id];
-  let templateVars = {shortURL: req.params.id,
-    URL: urlDatabase[req.params.id], user: currentUser,
+  let templateVars = {
+    shortURL: req.params.id,
+    URL: urlDatabase[req.params.id],
+    user: currentUser,
     log: visitLog[req.params.id]};
   if (templateVars.user){
     if(!templateVars.URL){
@@ -168,7 +170,14 @@ app.get("/urls/:id", (req,res) => {
 });
 
 app.post("/urls/:id", (req,res) => {
-  urlDatabase[req.params.id].longURL = req.body.newURL;
+  let inputURL = req.body.newURL;
+  let longURL;
+  if (inputURL.slice(0,4) === "http"){
+    longURL = inputURL;
+  } else{
+    longURL = "https://"+inputURL;
+  }
+  urlDatabase[req.params.id].longURL = longURL;
   urlDatabase[req.params.id].visit = 0;
   urlDatabase[req.params.id].uniqueVisit = 0;
   visitLog[req.params.id] = [];
@@ -180,33 +189,39 @@ app.get("/u/:id", (req, res) => {
     res.status(404).send("The short URL you entered is invalid.");
   } else{
     let longURL = urlDatabase[req.params.id].longURL;
-    urlDatabase[req.params.id]['visit']++;
-    if (!req.cookies[req.params.id]){
+    urlDatabase[req.params.id].visit++;
+    if (!req.session[req.params.id]){
       urlDatabase[req.params.id].uniqueVisit += 1;
       let viewerID = generateRandomString();
-      res.cookie(req.params.id, viewerID, {maxAge: 30 * 24 * 60 * 60 * 1000 }); // track unique visitor in the past 30 days
+      req.session[req.params.id] = viewerID;
       visitLog[req.params.id].push({time: new Date(), visitor: viewerID});
     } else{
-      visitLog[req.params.id].push({time: new Date(), visitor: req.cookies[req.params.id]});
+      visitLog[req.params.id].push({time: new Date(), visitor: req.session[req.params.id]});
     }
-    res.redirect("https://"+longURL);
+    res.redirect(longURL);
   }
 });
 
 app.post("/urls", (req,res) => {
   let shortURL = generateRandomString();
+  let inputURL = req.body.longURL;
+  var longURL;
+  if (inputURL.slice(0,4) === "http"){
+    longURL = inputURL;
+  } else{
+    longURL = "https://"+inputURL;
+  }
   urlDatabase[shortURL]= {};
-  urlDatabase[shortURL]['longURL'] = req.body.longURL;
-  urlDatabase[shortURL]['userID'] = req.session.user_id;
-  urlDatabase[shortURL]['date'] = dateToday();
-  urlDatabase[shortURL]['visit'] = 0;
-  urlDatabase[shortURL]['uniqueVisit'] = 0;
+  urlDatabase[shortURL].longURL = longURL;
+  urlDatabase[shortURL].userID = req.session.user_id;
+  urlDatabase[shortURL].date = dateToday();
+  urlDatabase[shortURL].visit = 0;
+  urlDatabase[shortURL].uniqueVisit = 0;
   visitLog[shortURL] = [];
   res.redirect(`/urls`);
 });
 
-app.get("/urls/:id/delete", (req,res) => {
-
+app.delete("/urls/:id", (req,res) => {
   let currentUser = users[req.session.user_id];
   if (currentUser){
     let templateVars = {shortURL: req.params.id,
@@ -214,7 +229,6 @@ app.get("/urls/:id/delete", (req,res) => {
     if (currentUser.id === urlDatabase[templateVars.shortURL].userID){
       delete urlDatabase[req.params.id];
       res.redirect("/urls");
-      console.log(`${req.params.id} has been deleted`);
     } else{
       res.status(403).send("Authorization Error! You don't have access to delete this URL.");
     }
