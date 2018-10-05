@@ -12,7 +12,7 @@
           <th scope="col">Original URLs</th>
           <th scope="col">Short URLs</th>
           <th scope="col">Created on</th>
-          <th scope="col">View Counts</th>
+          <th scope="col">View Counts(Unique)</th>
           <th scope="col">Options</th>
         </tr>
       </thead>
@@ -24,7 +24,7 @@
           <td>https://<%= urls[keys].longURL %></td>
           <td><a href="localhost:8080/u/<%= keys %>">localhost:8080/u/<%= keys %></a></td>
           <td><%= urls[keys].date %></td>
-          <td><%= urls[keys].visit %></td>
+          <td><%= urls[keys].visit %>(<%= urls[keys].uniqueVisit %>)</td>
           <td>
             <a href="/urls/<%= keys %>"><button type="button" class="btn btn-primary">Edit</button></a>
             <a href="/urls/<%= keys %>/delete"><button type="button" class="btn btn-danger">DELETE</button></a>
