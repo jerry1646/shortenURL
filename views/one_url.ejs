@@ -4,7 +4,7 @@
 <body style="font-size:20px; padding:50px;">
   <%include ./partials/_header.ejs %>
   <div class="jumbotron form-group text-center">
-    <h3><b>Inspect URL</b></h3>
+    <h3><b>Inspect URL: /u/<%= shortURL %></b></h3>
     <div>
 
       <ul class="list-group">
@@ -17,11 +17,20 @@
             <label for="newURL"> <b>Assign to New URL: </b></label>
             <input type="text" class="form-control mx-auto" style = "width: 400px; margin-bottom: 10px" name="newURL" placeholder = "http://">
             <input type="submit" class="btn btn-primary" name="updateURL" value="Update">
+            <div><small>Editing the URL will clear all view log data</small></div>
           </form>
         </li>
         <div class="text-left">
           <small>*Unique visits in the past 30 days</small>
         </div>
+      </ul>
+
+      <ul class="list-group">
+        <li class = "list-group-item align-items-center"><h4>Visit Log</h4></li>
+        <li class = "list-group-item d-flex justify-content-between align-items-center"><b>Visit time</b><b>Visitor ID</b></li>
+        <%for ( entry of log) { %>
+        <li class = "list-group-item d-flex justify-content-between align-items-center"><small><%= entry.time %></small><%= entry.visitor %></li>
+        <% } %>
       </ul>
 
     </div>

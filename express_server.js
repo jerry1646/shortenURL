@@ -72,8 +72,8 @@ var urlDatabase = {
   "b2xVn2": {longURL:"www.lighthouselabs.ca",
               userID: "userRandomID",
               date: '01/31/2017',
-              visit: 11,
-              uniqueVisit: 8},
+              visit: 0,
+              uniqueVisit: 0},
   "9sm5xK": {longURL: "www.google.com",
               userID: "user2RandomID",
               date: '12/31/2018',
@@ -92,6 +92,11 @@ var users = {
     email: "user2@example.com",
     password: "qwe"
   }
+};
+
+var visitLog = {
+  "9sm5xK":[], //time, visiter,
+  "b2xVn2":[]
 };
 
 //Hash dummy user password
@@ -147,7 +152,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req,res) => {
   let currentUser = users[req.session.user_id];
   let templateVars = {shortURL: req.params.id,
-    URL: urlDatabase[req.params.id], user: currentUser};
+    URL: urlDatabase[req.params.id], user: currentUser,
+    log: visitLog[req.params.id]};
   if (templateVars.user){
     if(!templateVars.URL){
       res.status(404).send("The short URL you entered is invalid.");
@@ -163,6 +169,9 @@ app.get("/urls/:id", (req,res) => {
 
 app.post("/urls/:id", (req,res) => {
   urlDatabase[req.params.id].longURL = req.body.newURL;
+  urlDatabase[req.params.id].visit = 0;
+  urlDatabase[req.params.id].uniqueVisit = 0;
+  visitLog[req.params.id] = [];
   res.redirect("/urls");
 });
 
@@ -172,9 +181,13 @@ app.get("/u/:id", (req, res) => {
   } else{
     let longURL = urlDatabase[req.params.id].longURL;
     urlDatabase[req.params.id]['visit']++;
-    if (!req.cookies.viewer){
+    if (!req.cookies[req.params.id]){
       urlDatabase[req.params.id].uniqueVisit += 1;
-      res.cookie('viewer', generateRandomString(), {maxAge: 30 * 24 * 60 * 60 * 1000 }); // track unique visitor in the past 30 days
+      let viewerID = generateRandomString();
+      res.cookie(req.params.id, viewerID, {maxAge: 30 * 24 * 60 * 60 * 1000 }); // track unique visitor in the past 30 days
+      visitLog[req.params.id].push({time: new Date(), visitor: viewerID});
+    } else{
+      visitLog[req.params.id].push({time: new Date(), visitor: req.cookies[req.params.id]});
     }
     res.redirect("https://"+longURL);
   }
@@ -187,7 +200,8 @@ app.post("/urls", (req,res) => {
   urlDatabase[shortURL]['userID'] = req.session.user_id;
   urlDatabase[shortURL]['date'] = dateToday();
   urlDatabase[shortURL]['visit'] = 0;
-  urlDatabase[req.params.id]['uniqueVisit'] = 0;
+  urlDatabase[shortURL]['uniqueVisit'] = 0;
+  visitLog[shortURL] = [];
   res.redirect(`/urls`);
 });
 
